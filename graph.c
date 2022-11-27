@@ -56,7 +56,7 @@ int max_colors() {
 	for (int i = 0; i < MAX_DIM; i++)
 		if (colors[i] > max_color)
 			max_color = colors[i];
-	return max_color;
+	return max_color + 1;
 }
 
 
@@ -65,7 +65,7 @@ void print_coloring() {
 	int max_color = max_colors();
 	printf("\nNumber of Colors: %3d\n", max_color);
 	printf("---------------------\n");
-	for (int color = 1; color <= max_color; color++) {
+	for (int color = 0; color < max_color; color++) {
 		printf("Color %3d:    ", color);
 		for (int vertex = 0; vertex < MAX_DIM; vertex++) {
 			if (colors[vertex] == color) {
