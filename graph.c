@@ -78,6 +78,23 @@ void print_coloring() {
 
 
 
+void test_coloring() {
+  for (int u = 0; u < MAX_DIM; u++) {
+    int test_color = colors[u];
+    for (int v = 0; v < MAX_DIM; v++) {
+      if ((u != v) && (adj_matrix[u][v] == 1)) {
+        if (test_color == colors[v]) {
+          printf("[error] graph Coloring isn't correct - adjacent nodes have same color\n");
+          break;
+        }
+      }
+    }
+  }
+  printf("\n[ info] passed\n");
+}
+
+
+
 int main (int argc, char *argv[]) {
   if( argc != 3 ) {
     printf("[error] incorrect usage of program.\n");
@@ -136,12 +153,12 @@ int main (int argc, char *argv[]) {
                     ((edge_v1 > num_vertices) ? edge_v1 : num_vertices);
       add_edge(edge_v1, edge_v2, degree_inc, 0);
     } else {
-      printf("Line with bad prefix: %s\n", line_buf);
+      printf("[error] line with bad prefix: %s\n", line_buf);
     }
   }
-  printf("Porcessing file %s:\n", argv[1]);
-  printf("num_vertices = %d\n", num_vertices);
-  printf("num_edges = %d\n", num_edges);
+  printf("[ info] porcessing file %s:\n", argv[1]);
+  printf("[ info] num_vertices = %d\n", num_vertices);
+  printf("[ info] num_edges = %d\n", num_edges);
 
   print_adj_matrix(print_sorted);
   // Sort the degrees combined array to get largest degree first
@@ -152,6 +169,8 @@ int main (int argc, char *argv[]) {
 		greedy_coloring();
 		print_coloring();
 	}
+
+  test_coloring();
 
   fclose(fp);
   return 0;
