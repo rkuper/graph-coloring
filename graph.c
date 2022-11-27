@@ -110,15 +110,17 @@ int main (int argc, char *argv[]) {
   int       num_vertices, num_edges;
   int       edge_v1, edge_v2;
   FILE     *fp;
-  char     *line_buf;
+  char     *line_buf = NULL;
   size_t    buf_len = 32;
   int       degree_inc = 1 << 16;
   int       print_sorted = 104;
 
   // Open graph file
   fp = fopen(argv[1], "r");
-  if (fp == NULL)
+  if (fp == NULL) {
+    printf("[error] could not find file: %s\n", argv[1]);
     return 0;
+  }
 
   // Reset adjacency matrix
   for (int i = 0; i < MAX_DIM; i++) {
@@ -156,7 +158,7 @@ int main (int argc, char *argv[]) {
       printf("[error] line with bad prefix: %s\n", line_buf);
     }
   }
-  printf("[ info] porcessing file %s:\n", argv[1]);
+  printf("[ info] porcessing file: %s\n", argv[1]);
   printf("[ info] num_vertices = %d\n", num_vertices);
   printf("[ info] num_edges = %d\n", num_edges);
 
