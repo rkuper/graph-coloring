@@ -1,11 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include "graph.h"
 
 
 
-void greedy_coloring() {
+void greedy() {
   int used[MAX_DIM];    //Used to check whether color is used or not
 
   colors[0] = 0;    //Assign first color for the first node

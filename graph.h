@@ -1,5 +1,7 @@
 #ifndef __GRAPH_H__
 #define __GRAPH_H__
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 #define MAX_DIM 1000
@@ -11,6 +13,7 @@ extern int      colors[MAX_DIM];
 
 // Graph coloring solutions
 void greedy_coloring();
+void largest_degree_first();
 
 // Useful helpers
 void print_adj_matrix(int n);

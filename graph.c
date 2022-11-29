@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include "graph.h"
 
 // Graph info
@@ -162,16 +159,20 @@ int main (int argc, char *argv[]) {
   printf("[ info] num_vertices = %d\n", num_vertices);
   printf("[ info] num_edges = %d\n", num_edges);
 
+  // Print the matrix out for debugging if need be
   print_adj_matrix(print_sorted);
-  // Sort the degrees combined array to get largest degree first
-  qsort(degrees, MAX_DIM, sizeof(int), cmp_deg);
 
-
+  // 1 = greedy, 2 = largest_degree_first
 	if (atoi(argv[2]) == 1) {
 		greedy_coloring();
-		print_coloring();
-	}
+	} else if (atoi(argv[2]) == 2) {
+    // Sort the degrees combined array to get largest degree first
+    qsort(degrees, MAX_DIM, sizeof(int), cmp_deg);
+    largest_degree_first();
+  }
 
+  // Print out the final results and confirm they are correct
+	print_coloring();
   test_coloring();
 
   fclose(fp);
