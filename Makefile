@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I. -g
 DEPS = graph.h
-OBJ = graph.o greedy.o
+OBJ = largest_degree_first.o greedy.o graph.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

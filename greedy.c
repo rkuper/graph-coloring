@@ -3,34 +3,41 @@
 
 
 void greedy() {
-  int used[MAX_DIM];    //Used to check whether color is used or not
+  int used[MAX_DIM];
 
-  colors[0] = 0;    //Assign first color for the first node
-  for(int i = 1; i < MAX_DIM; i++)
-    colors[i] = -1;    //initialize all other vertices are unassigned
+  // First color is set to color 0
+  colors[0] = 0;
+  for(int node = 0; node < MAX_DIM; node++)
+    colors[node] = -1;
 
-  for(int i = 0; i < MAX_DIM; i++)
-    used[i] = 0;    //initially any colors are not chosen
+  // used array starts with nothing
+  for(int node = 0; node < MAX_DIM; node++)
+    used[node] = 0;
 
-  for(int u = 1; u < MAX_DIM; u++) {    //for all other MAX_DIM - 1 vertices
-    for(int v = 0; v < MAX_DIM; v++) {
-      if(adj_matrix[u][v] == 1) {
-        if(colors[v] != -1)    //when one color is assigned, make it unavailable
-          used[colors[v]] = 1;
+  // Per node in graph
+  for(int node = 1; node < MAX_DIM; node++) {
+    // Mark all used colors
+    for(int neighbor = 0; neighbor < MAX_DIM; neighbor++) {
+      if(adj_matrix[node][neighbor] == 1) {
+        if(colors[neighbor] != -1)
+          used[colors[neighbor]] = 1;
       }
     }
 
-    int col;
-    for(col = 0; col < MAX_DIM; col++)
-      if(used[col] == 0)    //find a color which is not assigned
+    // Find first color not used
+    int color;
+    for(color = 0; color < MAX_DIM; color++)
+      if(used[color] == 0)
         break;
 
-    colors[u] = col;    //assign found color in the list
+    // Assign color found
+    colors[node] = color;
 
-    for(int v = 0; v < MAX_DIM; v++) {    //for next iteration make color availability to 0
-      if(adj_matrix[u][v] == 1) {
-        if(colors[v] != -1)
-          used[colors[v]] = 0;
+    // Reset colors used
+    for(int neighbor = 0; neighbor < MAX_DIM; neighbor++) {
+      if(adj_matrix[node][neighbor] == 1) {
+        if(colors[neighbor] != -1)
+          used[colors[neighbor]] = 0;
       }
     }
   }

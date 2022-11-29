@@ -109,7 +109,6 @@ int main (int argc, char *argv[]) {
   FILE     *fp;
   char     *line_buf = NULL;
   size_t    buf_len = 32;
-  int       degree_inc = 1 << 16;
   int       print_sorted = 104;
 
   // Open graph file
@@ -145,12 +144,12 @@ int main (int argc, char *argv[]) {
                                         &num_edges);
     } else if (line_buf[0] == 'e') {
       sscanf(line_buf, "%s %d %d\n", line_type, &edge_v1, &edge_v2);
-      add_edge(edge_v1, edge_v2, degree_inc, 0);
+      add_edge(edge_v1, edge_v2, 1 << DEGREE_OFFSET, 0);
     } else if (line_buf[0] >= '0' && line_buf[0] <= '9') {
       sscanf(line_buf, "%d %d\n", &edge_v1, &edge_v2);
       num_vertices = (edge_v2 > num_vertices) ? edge_v2 :
                     ((edge_v1 > num_vertices) ? edge_v1 : num_vertices);
-      add_edge(edge_v1, edge_v2, degree_inc, 0);
+      add_edge(edge_v1, edge_v2, 1 << DEGREE_OFFSET, 0);
     } else {
       printf("[error] line with bad prefix: %s\n", line_buf);
     }
@@ -164,10 +163,10 @@ int main (int argc, char *argv[]) {
 
   // 1 = greedy, 2 = largest_degree_first
 	if (atoi(argv[2]) == 1) {
-		greedy_coloring();
+		greedy();
 	} else if (atoi(argv[2]) == 2) {
     // Sort the degrees combined array to get largest degree first
-    qsort(degrees, MAX_DIM, sizeof(int), cmp_deg);
+    /* qsort(degrees, MAX_DIM, sizeof(int), cmp_deg); */
     largest_degree_first();
   }
 
