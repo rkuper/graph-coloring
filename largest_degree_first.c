@@ -1,11 +1,11 @@
 #include "graph.h"
 
 void largest_degree_first() {
-  uint8_t used[MAX_DIM];
+  uint8_t  used[MAX_DIM];
   uint16_t current_degree;
-  uint16_t max_degree = 0;
-  uint16_t neighbor_color = 0;
-  uint16_t min_color = 0;
+  uint16_t max_degree      = 0;
+  uint16_t neighbor_color  = 0;
+  uint16_t min_color       = 0;
 
   // Get the maximum degree from graph
   for (int node = 0; node < MAX_DIM; node++) {
@@ -24,7 +24,7 @@ void largest_degree_first() {
       if ((degrees[node] >> DEGREE_OFFSET) == degree) {
 
         // Zero out used neighbor colors
-        min_color = 1;
+        min_color = 0;
         for (int zeroed = 0; zeroed < MAX_DIM; zeroed++)
           used[zeroed] = 0;
 
@@ -37,7 +37,7 @@ void largest_degree_first() {
         }
 
         // Find lowest color available
-        for (int color = 1; color < MAX_DIM; color++) {
+        for (int color = 0; color < MAX_DIM; color++) {
           if (!used[color]) {
             min_color = color;
             break;

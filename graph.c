@@ -4,6 +4,8 @@
 uint32_t  degrees[MAX_DIM];
 uint8_t   adj_matrix[MAX_DIM][MAX_DIM];
 int       colors[MAX_DIM];
+int       num_nodes;
+int       num_edges;
 
 
 
@@ -17,18 +19,18 @@ void add_edge(int edge_v1, int edge_v2, int inc, int triangle) {
 	if (triangle == 1) {
     if (edge_v1 < edge_v2) {
       adj_matrix[edge_v2][edge_v1] = 1;
-      degrees[edge_v2] = degrees[edge_v2] + inc;
-      degrees[edge_v1] = degrees[edge_v1] + inc;
+      degrees[edge_v2] += inc;
+      degrees[edge_v1] += inc;
     } else {
       adj_matrix[edge_v1][edge_v2] = 1;
-      degrees[edge_v2] = degrees[edge_v2] + inc;
-      degrees[edge_v1] = degrees[edge_v1] + inc;
+      degrees[edge_v2] += inc;
+      degrees[edge_v1] += inc;
     }
   } else {
     adj_matrix[edge_v1][edge_v2] = 1;
     adj_matrix[edge_v2][edge_v1] = 1;
-    degrees[edge_v2] = degrees[edge_v2] + inc;
-    degrees[edge_v1] = degrees[edge_v1] + inc;
+    degrees[edge_v2] += inc;
+    degrees[edge_v1] += inc;
   }
   return;
 }
@@ -36,12 +38,12 @@ void add_edge(int edge_v1, int edge_v2, int inc, int triangle) {
 
 
 void print_adj_matrix(int n) {
-  printf("\nSorted vertices by degree (vertex, degree):");
+  printf("\nSorted vertices by degree (node, degree):");
   printf("\n-------------------------------------------");
   for (int i = 0; i < n; i++) {
     if (i % 8 == 0)
       printf("\n");
-    printf("(%3d, %4d)   ", degrees[i] & 0x0000FFFF, degrees[i] >> 16);
+    printf("(%3d, %4d)   ", degrees[i] & 0x0000FFFF, degrees[i] >> (DEGREE_OFFSET + 1));
   }
   printf("\n");
 }
@@ -64,9 +66,9 @@ void print_coloring() {
 	printf("---------------------\n");
 	for (int color = 0; color < max_color; color++) {
 		printf("Color %3d:    ", color);
-		for (int vertex = 0; vertex < MAX_DIM; vertex++) {
-			if (colors[vertex] == color) {
-				printf("%d ", vertex);
+		for (int node = 0; node < MAX_DIM; node++) {
+			if (node <= num_nodes && colors[node] == color) {
+				printf("%d ", node);
 			}
 		}
 		printf("\n");
@@ -82,7 +84,7 @@ void test_coloring() {
       if ((u != v) && (adj_matrix[u][v] == 1)) {
         if (test_color == colors[v]) {
           printf("[error] graph Coloring isn't correct - adjacent nodes have same color\n");
-          break;
+          return;
         }
       }
     }
@@ -104,7 +106,6 @@ int main (int argc, char *argv[]) {
   }
 
   char      line_type[1], line_format[4];
-  int       num_vertices, num_edges;
   int       edge_v1, edge_v2;
   FILE     *fp;
   char     *line_buf = NULL;
@@ -140,34 +141,35 @@ int main (int argc, char *argv[]) {
     } else if (line_buf[0] == 'p') {
       sscanf(line_buf, "%s %s %d %d\n", line_type,
                                         line_format,
-                                        &num_vertices,
+                                        &num_nodes,
                                         &num_edges);
     } else if (line_buf[0] == 'e') {
       sscanf(line_buf, "%s %d %d\n", line_type, &edge_v1, &edge_v2);
       add_edge(edge_v1, edge_v2, 1 << DEGREE_OFFSET, 0);
     } else if (line_buf[0] >= '0' && line_buf[0] <= '9') {
       sscanf(line_buf, "%d %d\n", &edge_v1, &edge_v2);
-      num_vertices = (edge_v2 > num_vertices) ? edge_v2 :
-                    ((edge_v1 > num_vertices) ? edge_v1 : num_vertices);
+      num_nodes = (edge_v2 > num_nodes) ? edge_v2 :
+                    ((edge_v1 > num_nodes) ? edge_v1 : num_nodes);
       add_edge(edge_v1, edge_v2, 1 << DEGREE_OFFSET, 0);
     } else {
       printf("[error] line with bad prefix: %s\n", line_buf);
     }
   }
   printf("[ info] porcessing file: %s\n", argv[1]);
-  printf("[ info] num_vertices = %d\n", num_vertices);
+  printf("[ info] num_nodes = %d\n", num_nodes);
   printf("[ info] num_edges = %d\n", num_edges);
 
   // Print the matrix out for debugging if need be
   print_adj_matrix(print_sorted);
 
-  // 1 = greedy, 2 = largest_degree_first
+  // 1 = greedy, 2 = largest_degree_first, 3 = smallest_degree_last
+  /* qsort(degrees, MAX_DIM, sizeof(int), cmp_deg); */
 	if (atoi(argv[2]) == 1) {
 		greedy();
 	} else if (atoi(argv[2]) == 2) {
-    // Sort the degrees combined array to get largest degree first
-    /* qsort(degrees, MAX_DIM, sizeof(int), cmp_deg); */
     largest_degree_first();
+  } else if (atoi(argv[2]) == 3) {
+    smallest_degree_last();
   }
 
   // Print out the final results and confirm they are correct
