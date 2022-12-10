@@ -21,7 +21,7 @@ void smallest_degree_last() {
 
   // Get minimum degree
   for (int node = 0; node < MAX_DIM; node++) {
-    current_degree = degrees[node] >> DEGREE_OFFSET;
+    current_degree = degrees[node] >> (DEGREE_OFFSET + 1);
     if (current_degree < minimum_degree)
       minimum_degree = current_degree;
   }
@@ -70,7 +70,7 @@ void smallest_degree_last() {
       if (weights[node] == weight) {
 
         // Zero out used neighbor colors
-        min_color = 0;
+        min_color = 1;
         for (int zeroed = 0; zeroed < MAX_DIM; zeroed++)
           used[zeroed] = 0;
 
@@ -83,7 +83,7 @@ void smallest_degree_last() {
         }
 
         // Find lowest color available
-        for (int color = 0; color < MAX_DIM; color++) {
+        for (int color = 1; color < MAX_DIM; color++) {
           if (!used[color]) {
             min_color = color;
             break;

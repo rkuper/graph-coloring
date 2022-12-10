@@ -19,10 +19,12 @@ extern int      num_edges;
 void greedy();
 void largest_degree_first();
 void smallest_degree_last();
+void recursive_largest_first();
+/* void recursive_largest_first_plus(); */
 
 // Useful helpers
 void print_adj_matrix(int n);
-int max_colors();
+int  max_colors();
 void print_coloring();
 
 #endif // __GRAPH_H__

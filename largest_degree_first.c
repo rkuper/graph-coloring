@@ -24,7 +24,7 @@ void largest_degree_first() {
       if ((degrees[node] >> DEGREE_OFFSET) == degree) {
 
         // Zero out used neighbor colors
-        min_color = 0;
+        min_color = 1;
         for (int zeroed = 0; zeroed < MAX_DIM; zeroed++)
           used[zeroed] = 0;
 
@@ -37,7 +37,7 @@ void largest_degree_first() {
         }
 
         // Find lowest color available
-        for (int color = 0; color < MAX_DIM; color++) {
+        for (int color = 1; color < MAX_DIM; color++) {
           if (!used[color]) {
             min_color = color;
             break;

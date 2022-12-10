@@ -62,9 +62,9 @@ int max_colors() {
 
 void print_coloring() {
 	int max_color = max_colors();
-	printf("\nNumber of Colors: %3d\n", max_color);
+	printf("\nNumber of Colors: %3d\n", max_color - 1);
 	printf("---------------------\n");
-	for (int color = 0; color < max_color; color++) {
+	for (int color = 1; color < max_color; color++) {
 		printf("Color %3d:    ", color);
 		for (int node = 0; node < MAX_DIM; node++) {
 			if (node <= num_nodes && colors[node] == color) {
@@ -170,6 +170,8 @@ int main (int argc, char *argv[]) {
     largest_degree_first();
   } else if (atoi(argv[2]) == 3) {
     smallest_degree_last();
+  } else if (atoi(argv[2]) == 4) {
+    recursive_largest_first();
   }
 
   // Print out the final results and confirm they are correct
