@@ -9,7 +9,8 @@ void largest_degree_first() {
 
   // Get the maximum degree from graph
   for (int node = 0; node < MAX_DIM; node++) {
-    current_degree = degrees[node] >> DEGREE_OFFSET;
+    if (node > num_nodes) { break; }
+    current_degree = degrees[node] >> (DEGREE_OFFSET);
     if (current_degree > max_degree)
       max_degree = current_degree;
   }
@@ -21,6 +22,7 @@ void largest_degree_first() {
 
     // Through each node, get neighbors and get what colors they're using
     for (int node = 0; node < MAX_DIM; node++) {
+      if (node > num_nodes) { break; }
       if ((degrees[node] >> DEGREE_OFFSET) == degree) {
 
         // Zero out used neighbor colors
@@ -30,6 +32,7 @@ void largest_degree_first() {
 
         // Mark all used colors by adjacent vectors
         for (int neighbor = 0; neighbor < MAX_DIM; neighbor++) {
+          if (neighbor > num_nodes) { break; }
           if (adj_matrix[node][neighbor] == 1) {
             neighbor_color = colors[neighbor];
             used[neighbor_color] = 1;

@@ -11,16 +11,14 @@
 extern uint32_t degrees[MAX_DIM];
 extern uint8_t  adj_matrix[MAX_DIM][MAX_DIM];
 extern int      colors[MAX_DIM];
-extern int      degree_inc;
 extern int      num_nodes;
-extern int      num_edges;
 
 // Graph coloring solutions
 void greedy();
 void largest_degree_first();
 void smallest_degree_last();
 void recursive_largest_first();
-/* void recursive_largest_first_plus(); */
+void fpga_implementation();
 
 // Useful helpers
 void print_adj_matrix(int n);

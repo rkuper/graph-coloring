@@ -1,4 +1,8 @@
 #include "graph.h"
+
+// Source largely from: https://www.codeproject.com/articles/88674/graph-coloring-using-recursive-large-first-rlf-alg
+// Some info: https://github.com/victorvde/heuristic-graph-coloring
+
 // this function finds the unprocessed vertex of which degree is maximum
 int max_node_degree() {
   int max = 0;
@@ -6,8 +10,8 @@ int max_node_degree() {
 	for (int i = 0; i < MAX_DIM; i++) {
 		if (i > num_nodes) { break; }
     if (colors[i] == 0) {
-      if ((degrees[i] >> (DEGREE_OFFSET + 1 )) >= max) {
-        max = (degrees[i] >> (DEGREE_OFFSET + 1 ));
+      if ((degrees[i] >> (DEGREE_OFFSET)) >= max) {
+        max = (degrees[i] >> (DEGREE_OFFSET));
         max_i = i;
       }
     }

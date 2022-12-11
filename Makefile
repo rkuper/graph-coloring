@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I. -g
 DEPS = graph.h
-OBJ = recursive_largest_first.o smallest_degree_last.o largest_degree_first.o greedy.o graph.o
+OBJ = fpga_implementation.o recursive_largest_first.o smallest_degree_last.o largest_degree_first.o greedy.o graph.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

@@ -15,24 +15,32 @@ int cmp_deg (const void * a, const void * b) {
 
 
 
-void add_edge(int edge_v1, int edge_v2, int inc, int triangle) {
+void add_edge(int edge_v1, int edge_v2, int triangle) {
 	if (triangle == 1) {
     if (edge_v1 < edge_v2) {
       adj_matrix[edge_v2][edge_v1] = 1;
-      degrees[edge_v2] += inc;
-      degrees[edge_v1] += inc;
     } else {
       adj_matrix[edge_v1][edge_v2] = 1;
-      degrees[edge_v2] += inc;
-      degrees[edge_v1] += inc;
     }
   } else {
     adj_matrix[edge_v1][edge_v2] = 1;
     adj_matrix[edge_v2][edge_v1] = 1;
-    degrees[edge_v2] += inc;
-    degrees[edge_v1] += inc;
   }
   return;
+}
+
+
+
+void get_degrees(int inc) {
+  for (int node = 0; node < MAX_DIM; node++) {
+    if (node > num_nodes) { break; }
+    for (int neighbor = 0; neighbor < MAX_DIM; neighbor++) {
+      if (neighbor > num_nodes) { break; }
+      if (node != neighbor && adj_matrix[node][neighbor] == 1) {
+         degrees[node] += inc;
+      }
+    }
+  }
 }
 
 
@@ -43,7 +51,7 @@ void print_adj_matrix(int n) {
   for (int i = 0; i < n; i++) {
     if (i % 8 == 0)
       printf("\n");
-    printf("(%3d, %4d)   ", degrees[i] & 0x0000FFFF, degrees[i] >> (DEGREE_OFFSET + 1));
+    printf("(%3d, %4d)   ", degrees[i] & 0x0000FFFF, degrees[i] >> (DEGREE_OFFSET));
   }
   printf("\n");
 }
@@ -100,6 +108,9 @@ int main (int argc, char *argv[]) {
     printf("[ info] algorithm types:\n");
     printf("[ info]    - 1 = Greedy\n");
     printf("[ info]    - 2 = Largest Degree First\n");
+    printf("[ info]    - 3 = Smallest Degree Last\n");
+    printf("[ info]    - 4 = Recursive Largest First\n");
+    printf("[ info]    - 5 = FPGA Implementation\n");
     printf("-----------------------------------------------\n");
     printf("[ info] run using: ./graph <data-file> <algorithm-type>\n");
     return 1;
@@ -111,6 +122,7 @@ int main (int argc, char *argv[]) {
   char     *line_buf = NULL;
   size_t    buf_len = 32;
   int       print_sorted = 104;
+  int       triangle = 0;
 
   // Open graph file
   fp = fopen(argv[1], "r");
@@ -127,6 +139,9 @@ int main (int argc, char *argv[]) {
     degrees[i] = i;
 		colors[i] = 0;
   }
+
+  if (atoi(argv[2]) == 5)
+    triangle = 1;
 
   // Parse graph file
   // Either through:
@@ -145,16 +160,17 @@ int main (int argc, char *argv[]) {
                                         &num_edges);
     } else if (line_buf[0] == 'e') {
       sscanf(line_buf, "%s %d %d\n", line_type, &edge_v1, &edge_v2);
-      add_edge(edge_v1, edge_v2, 1 << DEGREE_OFFSET, 0);
+      add_edge(edge_v1, edge_v2, triangle);
     } else if (line_buf[0] >= '0' && line_buf[0] <= '9') {
       sscanf(line_buf, "%d %d\n", &edge_v1, &edge_v2);
       num_nodes = (edge_v2 > num_nodes) ? edge_v2 :
                     ((edge_v1 > num_nodes) ? edge_v1 : num_nodes);
-      add_edge(edge_v1, edge_v2, 1 << DEGREE_OFFSET, 0);
+      add_edge(edge_v1, edge_v2, triangle);
     } else {
       printf("[error] line with bad prefix: %s\n", line_buf);
     }
   }
+  get_degrees(1 << DEGREE_OFFSET);
   printf("[ info] porcessing file: %s\n", argv[1]);
   printf("[ info] num_nodes = %d\n", num_nodes);
   printf("[ info] num_edges = %d\n", num_edges);
@@ -163,6 +179,7 @@ int main (int argc, char *argv[]) {
   print_adj_matrix(print_sorted);
 
   // 1 = greedy, 2 = largest_degree_first, 3 = smallest_degree_last
+  // 4 = recurive_largest_fiest, 5 = fpga_implementation
   /* qsort(degrees, MAX_DIM, sizeof(int), cmp_deg); */
 	if (atoi(argv[2]) == 1) {
 		greedy();
@@ -172,6 +189,8 @@ int main (int argc, char *argv[]) {
     smallest_degree_last();
   } else if (atoi(argv[2]) == 4) {
     recursive_largest_first();
+  } else if (atoi(argv[2]) == 5) {
+    fpga_implementation();
   }
 
   // Print out the final results and confirm they are correct

@@ -16,12 +16,14 @@ void smallest_degree_last() {
 
   // Zero out weights
   for (int node = 0; node < MAX_DIM; node++) {
+    if (node > num_nodes) { break; }
     weights[node] = 0;
   }
 
   // Get minimum degree
   for (int node = 0; node < MAX_DIM; node++) {
-    current_degree = degrees[node] >> (DEGREE_OFFSET + 1);
+    if (node > num_nodes) { break; }
+    current_degree = degrees[node] >> (DEGREE_OFFSET);
     if (current_degree < minimum_degree)
       minimum_degree = current_degree;
   }
@@ -31,7 +33,7 @@ void smallest_degree_last() {
     if (weight > num_nodes) { break; }
     for (int node = 0; node < MAX_DIM; node++) {
       if (node > num_nodes) { break; }
-      current_degree = degrees[node] >> (DEGREE_OFFSET + 1);
+      current_degree = degrees[node] >> (DEGREE_OFFSET);
       for (int neighbor = 0; neighbor < MAX_DIM; neighbor++) {
         if (neighbor > num_nodes) { break; }
         if (adj_matrix[node][neighbor] == 1 && weights[neighbor] > 0 && weights[neighbor] < weight) {
@@ -67,15 +69,19 @@ void smallest_degree_last() {
 
     // Through each node, get neighbors and get what colors they're using
     for (int node = 0; node < MAX_DIM; node++) {
+      if (node > num_nodes) { break; }
       if (weights[node] == weight) {
 
         // Zero out used neighbor colors
         min_color = 1;
-        for (int zeroed = 0; zeroed < MAX_DIM; zeroed++)
+        for (int zeroed = 0; zeroed < MAX_DIM; zeroed++) {
+          if (zeroed > num_nodes) { break; }
           used[zeroed] = 0;
+        }
 
         // Mark all used colors by adjacent vectors
         for (int neighbor = 0; neighbor < MAX_DIM; neighbor++) {
+          if (neighbor > num_nodes) { break; }
           if (adj_matrix[node][neighbor] == 1) {
             neighbor_color = colors[neighbor];
             used[neighbor_color] = 1;
