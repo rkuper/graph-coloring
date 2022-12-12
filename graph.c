@@ -60,7 +60,7 @@ void print_adj_matrix(int n) {
 
 int max_colors() {
 	int max_color = 0;
-	for (int i = 0; i < MAX_DIM; i++)
+	for (int i = 1; i < MAX_DIM; i++)
 		if (colors[i] > max_color)
 			max_color = colors[i];
 	return max_color + 1;
@@ -74,7 +74,7 @@ void print_coloring() {
 	printf("---------------------\n");
 	for (int color = 1; color < max_color; color++) {
 		printf("Color %3d:    ", color);
-		for (int node = 0; node < MAX_DIM; node++) {
+		for (int node = 1; node < MAX_DIM; node++) {
 			if (node <= num_nodes && colors[node] == color) {
 				printf("%d ", node);
 			}
@@ -85,10 +85,29 @@ void print_coloring() {
 
 
 
+void print_uncolored() {
+  int uncolored = 0;
+  for (int node = 1; node < MAX_DIM; node++) {
+    if (node > num_nodes) { break; }
+    if (colors[node] == 0)
+      uncolored++;
+  }
+  printf("[ info] Number of uncolored nodes: %d/%d\n", uncolored, num_nodes);
+  return;
+}
+
+
+
 void test_coloring() {
-  for (int u = 0; u < MAX_DIM; u++) {
+  for (int u = 1; u < MAX_DIM; u++) {
     int test_color = colors[u];
-    for (int v = 0; v < MAX_DIM; v++) {
+    if (u > num_nodes) { break; }
+    if (test_color == 0) {
+      printf("[error] graph Coloring isn't correct - adjacent nodes have same color\n");
+      return;
+    }
+    for (int v = 1; v < MAX_DIM; v++) {
+      if (v > num_nodes) { break; }
       if ((u != v) && (adj_matrix[u][v] == 1)) {
         if (test_color == colors[v]) {
           printf("[error] graph Coloring isn't correct - adjacent nodes have same color\n");
@@ -103,7 +122,7 @@ void test_coloring() {
 
 
 int main (int argc, char *argv[]) {
-  if( argc != 3 ) {
+  if( argc > 4 ) {
     printf("[error] incorrect usage of program.\n");
     printf("[ info] algorithm types:\n");
     printf("[ info]    - 1 = Greedy\n");
@@ -111,8 +130,10 @@ int main (int argc, char *argv[]) {
     printf("[ info]    - 3 = Smallest Degree Last\n");
     printf("[ info]    - 4 = Recursive Largest First\n");
     printf("[ info]    - 5 = FPGA Implementation\n");
-    printf("-----------------------------------------------\n");
-    printf("[ info] run using: ./graph <data-file> <algorithm-type>\n");
+    printf("[ info]    - 6 = Early Termination for LDF\n");
+    printf("[ info]    - 7 = Early Termination for RLF\n");
+    printf("----------------------------------------------------------------------\n");
+    printf("[ info] run using: ./graph <data-file> <algorithm-type> <end-early-%%>\n");
     return 1;
   }
 
@@ -123,6 +144,13 @@ int main (int argc, char *argv[]) {
   size_t    buf_len = 32;
   int       print_sorted = 104;
   int       triangle = 0;
+  int       percent_done = 0;
+  int       max_color = 0;
+  struct timespec start, stop;
+
+
+  if (argc == 4)
+    percent_done = atoi(argv[3]);
 
   // Open graph file
   fp = fopen(argv[1], "r");
@@ -180,22 +208,35 @@ int main (int argc, char *argv[]) {
 
   // 1 = greedy, 2 = largest_degree_first, 3 = smallest_degree_last
   // 4 = recurive_largest_fiest, 5 = fpga_implementation
+  // 6 = early_term_ldf, 7 = early_term_rlf
   /* qsort(degrees, MAX_DIM, sizeof(int), cmp_deg); */
-	if (atoi(argv[2]) == 1) {
-		greedy();
-	} else if (atoi(argv[2]) == 2) {
-    largest_degree_first();
-  } else if (atoi(argv[2]) == 3) {
-    smallest_degree_last();
-  } else if (atoi(argv[2]) == 4) {
-    recursive_largest_first();
-  } else if (atoi(argv[2]) == 5) {
-    fpga_implementation();
+  clock_gettime( CLOCK_REALTIME, &start);
+  switch (atoi(argv[2])) {
+    case 1: greedy(); break;
+    case 2: largest_degree_first(); break;
+    case 3: smallest_degree_last(); break;
+    case 4: recursive_largest_first(); break;
+    case 5: fpga_implementation(); break;
+    case 6:
+      max_color = early_term_ldf((float)percent_done / 100.0);
+      exact_coloring(max_color);
+      printf("[ info] k_colors needed: %d\n", max_color);
+      break;
+    case 7:
+      max_color = early_term_rlf((float)percent_done / 100.0);
+      printf("[ info] k_colors needed: %d\n", max_color);
+      exact_coloring(max_color);
+      break;
+    default: break;
   }
+  clock_gettime( CLOCK_REALTIME, &stop);
 
   // Print out the final results and confirm they are correct
 	print_coloring();
   test_coloring();
+  print_uncolored();
+
+  printf("[ time] Time for coloring: %luus\n", (stop.tv_nsec - start.tv_nsec) / 1000);
 
   fclose(fp);
   return 0;

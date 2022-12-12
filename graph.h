@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 #define MAX_DIM       10000
 #define DEGREE_OFFSET 16
@@ -19,6 +20,10 @@ void largest_degree_first();
 void smallest_degree_last();
 void recursive_largest_first();
 void fpga_implementation();
+int early_term_ldf(float percent_done);
+int early_term_rlf(float percent_done);
+
+void exact_coloring(int k_colors);
 
 // Useful helpers
 void print_adj_matrix(int n);
