@@ -90,6 +90,7 @@ void smallest_degree_last() {
 
         // Find lowest color available
         for (int color = 1; color < MAX_DIM; color++) {
+          if (color > num_nodes) { break; }
           if (!used[color]) {
             min_color = color;
             break;

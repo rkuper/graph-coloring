@@ -8,6 +8,7 @@ int early_term_ldf(float percent_done) {
   uint16_t min_color       = 0;
   uint16_t colored_nodes   = 0;
   uint16_t max_color       = 0;
+  int      early_stop      = 0;
 
   // Get the maximum degree from graph
   for (int node = 0; node < MAX_DIM; node++) {
@@ -19,12 +20,10 @@ int early_term_ldf(float percent_done) {
 
   // Begin algorithm by first going from highest to lowest degree
   for (int degree = MAX_DIM - 1; degree >= 0; degree--) {
-    if (degree > max_degree)
-      continue;
+    if (degree > max_degree) { continue; }
     /* if (degree < (int)(max_degree*percent_done)) */
     /*   break; */
-    if (colored_nodes > (int)(num_nodes * percent_done))
-      break;
+    if (early_stop == 1) { break; }
 
     // Through each node, get neighbors and get what colors they're using
     for (int node = 0; node < MAX_DIM; node++) {
@@ -47,6 +46,7 @@ int early_term_ldf(float percent_done) {
 
         // Find lowest color available
         for (int color = 1; color < MAX_DIM; color++) {
+          if (color > num_nodes) { break; }
           if (!used[color]) {
             min_color = color;
             break;
@@ -59,6 +59,8 @@ int early_term_ldf(float percent_done) {
           max_color = min_color;
         colored_nodes++;
       }
+      early_stop = colored_nodes > (int)(num_nodes * percent_done);
+      if (early_stop == 1) { break; }
     }
   }
   return max_color;

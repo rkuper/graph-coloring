@@ -124,168 +124,35 @@ void recursive_largest_first() {
   int x,y;
   int color_number = 0;
   int vertices_in_common = 0;
-  /* int scanned[MAX_DIM]; */
-
-  // max_degree_in_nn()
-  /* int tmp_y; // the vertex has the current maximum degree */
-  /* int temp, max = 0; */
 
   for (int i = 0; i < MAX_DIM; i++) {
-    if (unprocessed <= 0)
+    if (unprocessed < 0)
       break;
     x = max_node_degree(); // find the one with maximum degree
     color_number++;
     colors[x] = color_number; // give it a new color
     unprocessed--;
 
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // update_nn()
     update_nn(color_number, &nn_count, nn);
-    /* nn_count = 0; */
-    /* // firstly, add all the uncolored vertices into nn set */
-    /* for (int k = 0; k < MAX_DIM; k++) { */
-    /* 	if (k > num_nodes) { break; } */
-    /*   if (colors[k] == 0) { */
-    /*     nn[nn_count] = k; */
-    /*     nn_count++; // when we add a vertex, increase the nn_count */
-    /*   } */
-    /* } */
-    /* // then, remove all the vertices in nn that */
-    /* // is adjacent to the vertices colored color_number */
-    /* for (int k = 0; k < MAX_DIM; k++) { */
-    /* 	if (k > num_nodes) { break; } */
-    /*   if (colors[k] == color_number) { // find one vertex colored color_number */
-    /*     for (int l = 0; l < MAX_DIM; l++) { */
-    /*       if (l >= nn_count) { break; } */
-    /*       // remove vertex that adjacent to the found vertex */
-    /*       while (adj_matrix[k][nn[l]] == 1) { */
-    /*         nn[l] = nn[nn_count - 1]; */
-    /*         nn_count--; // decrease the nn_count */
-    /*       } */
-    /*     } */
-    /*   } */
-    /* } */
-    //////////////////////////////////////////////////////////////////////////
-
-
-
 
     for (int j = 0; j < MAX_DIM; j++) {
       if (nn_count <= 0) { break; }
     // find y, the vertex has the maximum neighbors in common with x
     // vertices_in_common is this maximum number
 
-      //////////////////////////////////////////////////////////////////////////
-      // find_suitable_y()
       // array scanned stores uncolored vertices
       // except the vertex is being processing
       y = find_suitable_y(color_number, &vertices_in_common, &nn_count, nn);
-      /* vertices_in_common = 0; */
-      /* for (int k=0; k < MAX_DIM; k++) { // check the k-th vertex in nn */
-      /*   if (k >= nn_count) { break; } */
-      /*   // tmp_y is the vertex we are processing */
-      /*   tmp_y = nn[k]; */
-      /*   // temp is the neighbors in common of tmp_y */
-      /*   // and the vertices colored color_number */
-      /*   temp = 0; */
-      /*   for (int l = 0; l < MAX_DIM; l++) { */
-	    		/* if (l > num_nodes) { break; } */
-      /*   	scanned[l] = 0; */
-	    	/* } */
-      /*   //reset scanned array in order to check all */
-      /*   //the vertices if they are adjacent to i-th vertex in nn */
-      /*   for (int x=0; x < MAX_DIM; x++) { */
-	    		/* if (x > num_nodes) { break; } */
-      /*     if (colors[x] == color_number) { // find one vertex colored color_number */
-      /*       for (int l = 0; l < MAX_DIM; l++) { */
-	    				/* if (l > num_nodes) { break; } */
-      /*         if (colors[l] == 0 && scanned[l] == 0) { */
-      /*           // if l is a neighbor in common of x and tmp_ */
-      /*           if (adj_matrix[x][l] == 1 && adj_matrix[tmp_y][l] == 1) { */
-      /*             temp ++; */
-      /*             scanned[l] = 1; // l is scanned */
-      /*           } */
-      /*         } */
-      /*       } */
-      /*     } */
-      /*   } */
-      /*   if (temp > vertices_in_common) { */
-      /*     vertices_in_common = temp; */
-      /*     y = tmp_y; */
-      /*   } */
-      /* } */
-      //////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-      // max_degree_in_nn()
     // in case vertices_in_common = 0
     // y is determined that the vertex with max degree in nn
       if (vertices_in_common == 0)
         y = max_degree_in_nn(&nn_count, nn);
-      /*   for (int k=0; i < nn_count; k++) { */
-      /*     temp = 0; */
-      /*     for (int l=0; l < MAX_DIM; l++) { */
-      /* 			if (l > num_nodes) { break; } */
-      /*       if (colors[l] == 0 && adj_matrix[nn[k]][l] == 1) */
-      /*         temp++; */
-      /* 		} */
-      /*     if (temp>max) { // if the degree of vertex nn[i] is higher than tmp_y's one */
-      /*       max = temp; // assignment nn[i] to tmp_y */
-      /*       tmp_y = nn[k]; */
-      /*     } */
-      /*   } */
-      /*   if (max == 0) */
-      /*     y = nn[0]; */
-      /*   else */
-      /*     y = tmp_y; */
-      /* } */
-      //////////////////////////////////////////////////////////////////////////
-
 
     // color y the same to x
       colors[y] = color_number;
       unprocessed--;
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-      // update_nn()
       update_nn(color_number, &nn_count, nn);
-      /* nn_count = 0; */
-      /* // firstly, add all the uncolored vertices into nn set */
-      /* for (int k = 0; k < MAX_DIM; k++) { */
-	    	/* if (k > num_nodes) { break; } */
-      /*   if (colors[k] == 0) { */
-      /*     nn[nn_count] = k; */
-      /*     nn_count++; // when we add a vertex, increase the nn_count */
-      /*   } */
-      /* } */
-      /* // then, remove all the vertices in nn that */
-      /* // is adjacent to the vertices colored color_number */
-      /* for (int k = 0; k < MAX_DIM; k++) { */
-	    	/* if (k > num_nodes) { break; } */
-      /*   if (colors[k] == color_number) { // find one vertex colored color_number */
-      /*     for (int l = 0; l < MAX_DIM; l++) { */
-      /*       if (l >= nn_count) { break; } */
-      /*       // remove vertex that adjacent to the found vertex */
-      /*       while (adj_matrix[k][nn[l]] == 1) { */
-      /*         nn[l] = nn[nn_count - 1]; */
-      /*         nn_count--; // decrease the nn_count */
-      /*       } */
-      /*     } */
-      /*   } */
-      /* } */
-      //////////////////////////////////////////////////////////////////////////
-    // find the new set of non-neighbors of x
     }
   }
 }

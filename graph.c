@@ -219,13 +219,15 @@ int main (int argc, char *argv[]) {
     case 5: fpga_implementation(); break;
     case 6:
       max_color = early_term_ldf((float)percent_done / 100.0);
-      exact_coloring(max_color);
+      recursive_largest_first();
+      /* exact_coloring(max_color); */
       printf("[ info] k_colors needed: %d\n", max_color);
       break;
     case 7:
       max_color = early_term_rlf((float)percent_done / 100.0);
       printf("[ info] k_colors needed: %d\n", max_color);
-      exact_coloring(max_color);
+      largest_degree_first();
+      /* exact_coloring(max_color); */
       break;
     default: break;
   }
@@ -236,7 +238,7 @@ int main (int argc, char *argv[]) {
   test_coloring();
   print_uncolored();
 
-  printf("[ time] Time for coloring: %luus\n", (stop.tv_nsec - start.tv_nsec) / 1000);
+  printf("[ time] Time for coloring: %lluus\n", (long long unsigned int)(stop.tv_nsec - start.tv_nsec) / 1000);
 
   fclose(fp);
   return 0;

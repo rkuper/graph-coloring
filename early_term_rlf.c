@@ -32,12 +32,15 @@ void early_update_nn(int color_number, int *nn_count, int nn[MAX_DIM]) {
   }
   // then, remove all the vertices in nn that
   // is adjacent to the vertices colored color_number
-  for (int i=0; i < MAX_DIM; i++) {
+  for (int i = 0; i < MAX_DIM; i++) {
 		if (i > num_nodes) { break; }
     if (colors[i] == color_number) { // find one vertex colored color_number
-      for (int j=0; j < *nn_count; j++) {
+      for (int j = 0; j < MAX_DIM; j++) {
+        if (j >= *nn_count) { break; }
         // remove vertex that adjacent to the found vertex
-        while (adj_matrix[i][nn[j]] == 1) {
+        for (int k = 0; k < MAX_DIM; k++) {
+          if (adj_matrix[i][nn[j]] != 1) { break; }
+        /* while (adj_matrix[i][nn[j]] == 1) { */
           nn[j] = nn[*nn_count - 1];
           (*nn_count)--; // decrease the nn_count
         }
@@ -53,22 +56,23 @@ int early_find_suitable_y(int color_number, int *vertices_in_common, int *nn_cou
   // except the vertex is being processing
   int scanned[MAX_DIM];
   *vertices_in_common = 0;
-  for (int i=0; i < *nn_count; i++) { // check the i-th vertex in nn
+  for (int i = 0; i < MAX_DIM; i++) { // check the i-th vertex in nn
+    if (i >= *nn_count) { break; }
     // tmp_y is the vertex we are processing
     tmp_y = nn[i];
     // temp is the neighbors in common of tmp_y
     // and the vertices colored color_number
     temp = 0;
-    for (int i=0; i < MAX_DIM; i++) {
-			if (i > num_nodes) { break; }
-    	scanned[i] = 0;
+    for (int j = 0; j < MAX_DIM; j++) {
+			if (j > num_nodes) { break; }
+    	scanned[j] = 0;
 		}
     //reset scanned array in order to check all
     //the vertices if they are adjacent to i-th vertex in nn
-    for (int x=0; x < MAX_DIM; x++) {
+    for (int x = 0; x < MAX_DIM; x++) {
 			if (x > num_nodes) { break; }
       if (colors[x] == color_number) { // find one vertex colored color_number
-        for (int k=0; k < MAX_DIM; k++) {
+        for (int k = 0; k < MAX_DIM; k++) {
 					if (k > num_nodes) { break; }
           if (colors[k] == 0 && scanned[k] == 0) {
             // if k is a neighbor in common of x and tmp_
@@ -92,14 +96,15 @@ int early_find_suitable_y(int color_number, int *vertices_in_common, int *nn_cou
 int early_max_degree_in_nn(int *nn_count, int nn[MAX_DIM]) {
   int tmp_y; // the vertex has the current maximum degree
   int temp, max = 0;
-  for (int i=0; i < *nn_count; i++) {
+  for (int i = 0; i < MAX_DIM; i++) {
+    if (i >= *nn_count) { break; }
     temp = 0;
-    for (int j=0; j < MAX_DIM; j++) {
+    for (int j = 0; j < MAX_DIM; j++) {
 			if (j > num_nodes) { break; }
       if (colors[j] == 0 && adj_matrix[nn[i]][j] == 1)
         temp ++;
 		}
-    if (temp>max) { // if the degree of vertex nn[i] is higher than tmp_y's one
+    if (temp > max) { // if the degree of vertex nn[i] is higher than tmp_y's one
       max = temp; // assignment nn[i] to tmp_y
       tmp_y = nn[i];
     }
@@ -120,32 +125,47 @@ int early_term_rlf(float percent_done) {
   int x,y;
   int color_number = 0;
   int vertices_in_common = 0;
+  int early_term = 0;
+  /* int scanned[MAX_DIM]; */
+
+  // max_degree_in_nn()
+  /* int tmp_y; // the vertex has the current maximum degree */
+  /* int temp, max = 0; */
 
   for (int i = 0; i < MAX_DIM; i++) {
-    if (unprocessed <= 0)
-      break;
-    if (processed > (int)(num_nodes * percent_done))
-      break;
+    if (unprocessed <= 0) { break; }
+    if (early_term == 1) { break; }
     x = early_max_node_degree(); // find the one with maximum degree
     color_number++;
     colors[x] = color_number; // give it a new color
     unprocessed--;
     processed++;
-    early_update_nn(color_number, &nn_count, nn); // find the set of non-neighbors of x
+
+
+
+    early_update_nn(color_number, &nn_count, nn);
+
     for (int j = 0; j < MAX_DIM; j++) {
-      if (nn_count <= 0)
-      break;
+      if (nn_count <= 0) { break; }
     // find y, the vertex has the maximum neighbors in common with x
     // vertices_in_common is this maximum number
+
+      // array scanned stores uncolored vertices
+      // except the vertex is being processing
       y = early_find_suitable_y(color_number, &vertices_in_common, &nn_count, nn);
+
     // in case vertices_in_common = 0
     // y is determined that the vertex with max degree in nn
       if (vertices_in_common == 0)
         y = early_max_degree_in_nn(&nn_count, nn);
+
     // color y the same to x
       colors[y] = color_number;
       unprocessed--;
       processed++;
+      early_term = processed > (int)(num_nodes * percent_done);
+      if (early_term == 1) { break; }
+
       early_update_nn(color_number, &nn_count, nn);
     // find the new set of non-neighbors of x
     }

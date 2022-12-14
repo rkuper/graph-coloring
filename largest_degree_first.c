@@ -9,6 +9,7 @@ void largest_degree_first() {
 
   // Get the maximum degree from graph
   for (int node = 0; node < MAX_DIM; node++) {
+    if (colors[node] != 0) { continue; }
     if (node > num_nodes) { break; }
     current_degree = degrees[node] >> (DEGREE_OFFSET);
     if (current_degree > max_degree)
@@ -21,8 +22,9 @@ void largest_degree_first() {
       continue;
 
     // Through each node, get neighbors and get what colors they're using
-    for (int node = 0; node < MAX_DIM; node++) {
-      if (node > num_nodes) { break; }
+    for (int node = MAX_DIM; node >= 0; node--) {
+      if (colors[node] != 0) { continue; }
+      if (node > num_nodes) { continue; }
       if ((degrees[node] >> DEGREE_OFFSET) == degree) {
 
         // Zero out used neighbor colors
@@ -41,6 +43,7 @@ void largest_degree_first() {
 
         // Find lowest color available
         for (int color = 1; color < MAX_DIM; color++) {
+          if (color > num_nodes) { break; }
           if (!used[color]) {
             min_color = color;
             break;

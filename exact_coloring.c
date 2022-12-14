@@ -4,7 +4,7 @@ void exact_coloring(int k_colors) {
   uint8_t used[MAX_DIM];
   int node, neighbor, color;
 
-  for (node = MAX_DIM - 1; node >= 0; node--) {
+  for (node = 0; node < MAX_DIM; node++) {
     if (node > num_nodes) { break; }
     if (colors[node] > 0)
       continue;
@@ -14,7 +14,7 @@ void exact_coloring(int k_colors) {
       used[color] = 0;
     }
 
-    for (neighbor = MAX_DIM; neighbor >= 0; neighbor--) {
+    for (neighbor = 0; neighbor < MAX_DIM; neighbor++) {
       if (neighbor > num_nodes) { break; }
       if (neighbor != node && adj_matrix[node][neighbor] &&
           colors[neighbor] > 0)
