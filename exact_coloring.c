@@ -5,20 +5,24 @@ void exact_coloring(int k_colors) {
   int node, neighbor, color;
 
   for (node = MAX_DIM - 1; node >= 0; node--) {
+    if (node > num_nodes) { break; }
     if (colors[node] > 0)
       continue;
 
     for (color = 0; color < MAX_DIM; color++) {
+      if (color > num_nodes) { break; }
       used[color] = 0;
     }
 
-    for (neighbor = 0; neighbor < MAX_DIM; neighbor++) {
+    for (neighbor = MAX_DIM; neighbor >= 0; neighbor--) {
+      if (neighbor > num_nodes) { break; }
       if (neighbor != node && adj_matrix[node][neighbor] &&
           colors[neighbor] > 0)
         used[colors[neighbor]] = 1;
     }
 
-    for (color = 1; color <= k_colors; color++) {
+    for (color = 1; color < MAX_DIM; color++) {
+      if (color > k_colors) { break; }
       if (used[color] == 0) {
         colors[node] = color;
         break;
