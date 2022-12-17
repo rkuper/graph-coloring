@@ -220,14 +220,12 @@ int main (int argc, char *argv[]) {
     case 6:
       max_color = early_term_ldf((float)percent_done / 100.0);
       recursive_largest_first();
-      /* exact_coloring(max_color); */
       printf("[ info] k_colors needed: %d\n", max_color);
       break;
     case 7:
       max_color = early_term_rlf((float)percent_done / 100.0);
       printf("[ info] k_colors needed: %d\n", max_color);
       largest_degree_first();
-      /* exact_coloring(max_color); */
       break;
     default: break;
   }

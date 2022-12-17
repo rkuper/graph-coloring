@@ -9,11 +9,12 @@ void largest_degree_first() {
 
   // Get the maximum degree from graph
   for (int node = 0; node < MAX_DIM; node++) {
-    if (colors[node] != 0) { continue; }
-    if (node > num_nodes) { break; }
-    current_degree = degrees[node] >> (DEGREE_OFFSET);
-    if (current_degree > max_degree)
-      max_degree = current_degree;
+    if (colors[node] == 0) {
+      if (node > num_nodes) { break; }
+      current_degree = degrees[node] >> (DEGREE_OFFSET);
+      if (current_degree > max_degree)
+        max_degree = current_degree;
+    }
   }
 
   // Begin algorithm by first going from highest to lowest degree
