@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <time.h>
 
-#define MAX_DIM       1024
+#define MAX_DIM       512
 #define DEGREE_OFFSET 16
 
 // Why header file, why?
